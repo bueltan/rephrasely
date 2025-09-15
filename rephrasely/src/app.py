@@ -12,7 +12,7 @@ from rephrasely.src.set_env_os import save_tokens, read_all_tokens
 import secrets
 from urllib.parse import urlencode
 from werkzeug.middleware.proxy_fix import ProxyFix
-
+from markupsafe import escape
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]  # rephrasely/src/app.py → parents[2] = repo root
@@ -82,9 +82,109 @@ TOKENS_FILE = Path("/home/d_gimenez/apps/rephrasely/tokens.yml")
 def _test_session():
     session["ping"] = "pong"
     return {"stored": True, "state_present": bool(session.get("oauth_state"))}
+
 # Configure the scopes you need
-BOT_SCOPES  = ["chat:write"]                      # keep/add your bot scopes
-USER_SCOPES = ["chat:write", "channels:read", "im:write"]  # user token scopes
+BOT_SCOPES  = ["commands", "chat:write"]                 # <-- add "commands"
+USER_SCOPES = ["chat:write", "channels:read", "im:write"]
+
+
+# ---------- tiny page renderer ----------
+def render_page(title: str, body_html: str, status: int = 200) -> tuple[str, int]:
+    return render_template_string(f"""
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{{{ title }}}}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {{
+        --bg:#f6f7fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+        --ok:#10b981; --warn:#f59e0b; --err:#ef4444; --link:#2563eb;
+        --border:#e5e7eb;
+      }}
+      * {{ box-sizing: border-box; }}
+      body {{
+        margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg); color: var(--text);
+        display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
+      }}
+      .card {{
+        width:100%; max-width:720px; background:var(--card); border:1px solid var(--border);
+        border-radius:16px; padding:28px; box-shadow: 0 10px 25px rgba(0,0,0,.06);
+      }}
+      .head {{
+        display:flex; gap:16px; align-items:center; margin-bottom:8px;
+      }}
+      .logo {{
+        width:64px; height:64px; border-radius:50%; box-shadow: 0 2px 6px rgba(0,0,0,.12);
+      }}
+      h1 {{ font-size:1.6rem; margin:0; }}
+      .muted {{ color:var(--muted); margin-top:2px; }}
+      .ok {{ color:var(--ok); font-weight:600; }}
+      .warn {{ color:var(--warn); font-weight:600; }}
+      .err {{ color:var(--err); font-weight:600; }}
+      .kv {{
+        display:grid; grid-template-columns: 160px 1fr; gap:8px 16px; margin:18px 0 8px;
+      }}
+      .kv div:nth-child(odd) {{ color:var(--muted); }}
+      code {{ background:#f3f4f6; border:1px solid var(--border); padding:2px 6px; border-radius:6px; }}
+      .cta {{ display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }}
+      .btn {{
+        display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid var(--border);
+        text-decoration:none; color:var(--text); background:#fff;
+      }}
+      .btn.primary {{ background:#111827; color:#fff; border-color:#111827; }}
+      .hr {{ height:1px; background:var(--border); margin:22px 0; }}
+      .help {{
+        background:#fff7ed; border:1px solid #fed7aa; color:#7c2d12;
+        padding:12px 14px; border-radius:10px; margin-top:16px;
+      }}
+      .slack-btn img {{ height:40px; width:139px; }}
+      @media (max-width:520px) {{
+        .kv {{ grid-template-columns: 1fr; }}
+      }}
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="head">
+        <img class="logo" alt="Rephrasely" src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png" />
+        <div>
+          <h1>{{{{ title }}}}</h1>
+          <div class="muted">Rephrasely • Your AI Slack Assistant</div>
+        </div>
+      </div>
+      {{{{ body_html|safe }}}}
+    </main>
+  </body>
+</html>
+    """, title=title), status
+
+# ---------- pretty error pages ----------
+@app.errorhandler(400)
+def handle_400(e):
+    body = f"""
+      <p class="err">Installation error (400).</p>
+      <div class="help"><strong>Details:</strong> {escape(getattr(e, "description", "Bad request"))}</div>
+      <div class="cta">
+        <a class="btn" href="{{{{ url_for('install') }}}}">Try again</a>
+        <a class="btn" href="{{{{ url_for('home') }}}}">Back to Home</a>
+      </div>
+    """
+    return render_page("Install error", body, status=400)
+
+@app.errorhandler(502)
+def handle_502(e):
+    body = f"""
+      <p class="err">Temporary gateway error (502).</p>
+      <div class="help"><strong>Details:</strong> {escape(getattr(e, "description", "Upstream error"))}</div>
+      <div class="cta">
+        <a class="btn" href="{{{{ url_for('install') }}}}">Try again</a>
+        <a class="btn" href="{{{{ url_for('home') }}}}">Back to Home</a>
+      </div>
+    """
+    return render_page("Install error", body, status=502)
 
 
 
@@ -158,14 +258,97 @@ def mask(token: str | None) -> str:
 
 @app.route("/")
 def home():
-    """Landing page with Slack authorize link (bot + user scopes)."""
-    state = secrets.token_urlsafe(24)
-    session["oauth_state"] = state
-    auth_url = build_authorize_url(state)
-    return render_template_string(
-        '<a href="{{auth_url}}">Authorize Slack App</a>',
-        auth_url=auth_url,
-    )
+    return render_template_string("""
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Rephrasely • Your AI Slack Assistant</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: #f9fafb;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 40px 20px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 2.2rem;
+        margin: 1rem 0 0.5rem;
+      }
+      p {
+        max-width: 640px;
+        font-size: 1.1rem;
+        line-height: 1.5;
+      }
+      .logo {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      }
+      .slack-btn {
+        margin-top: 20px;
+      }
+      .usage {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 18px;
+        margin: 24px auto;
+        font-family: monospace;
+        font-size: 1rem;
+        color: #222;
+        display: inline-block;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      iframe {
+        margin-top: 40px;
+        width: 560px;
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      }
+    </style>
+  </head>
+  <body>
+    <img src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png"
+         alt="Rephrasely Logo"
+         class="logo" />
+
+    <h1>Rephrasely</h1>
+    <p>
+      Rephrasely is your intelligent Slack assistant that helps you send clearer,
+      more thoughtful messages. Before your message goes out, Rephrasely uses AI
+      to refine your text—whether that means rephrasing for tone, improving clarity,
+      or aligning with your communication goals.
+    </p>
+
+    <div class="usage">/re Your original message here</div>
+
+    <div class="slack-btn">
+      <a href="{{ url_for('install') }}">
+        <img alt="Add to Slack" height="40" width="139"
+             src="https://platform.slack-edge.com/img/add_to_slack.png"
+             srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
+                     https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
+      </a>
+    </div>
+
+    <iframe src="https://www.youtube.com/embed/RkcwLKBhhLA"
+            title="Rephrasely how to use"
+            allowfullscreen></iframe>
+  </body>
+</html>
+    """)
 
 
 
@@ -180,7 +363,6 @@ def oauth_callback():
     if not code:
         return abort(400, description="Missing ?code")
 
-    # CSRF check
     expected_state = session.get("oauth_state")
     if expected_state and state != expected_state:
         return abort(400, description="Invalid state")
@@ -199,7 +381,7 @@ def oauth_callback():
 
     if not data.get("ok"):
         # Example: {"ok": false, "error": "invalid_code"}
-        return jsonify(data), 400
+        return abort(400, description=f"Slack error: {data.get('error','unknown')}")
 
     # Extract tokens and ids
     bot_token   = data.get("access_token")  # xoxb-...
@@ -229,15 +411,44 @@ def oauth_callback():
     session["used_oauth_code"] = code
     session.pop("oauth_state", None)
 
-    html = f"""
-    <h3>Install OK</h3>
-    <p>Team: <strong>{team_name or '—'}</strong> ({team_id or '—'})</p>
-    <p>User: <strong>{user_id or '—'}</strong></p>
-    <p>Bot token: <code>{mask(bot_token)}</code></p>
-    <p>User token: <code>{mask(user_token)}</code> (requires user_scope)</p>
-    <p><a href="{url_for('home')}">Back</a></p>
+    # Success page content
+    masked_bot  = escape(mask(bot_token))
+    masked_user = escape(mask(user_token)) if user_token else "—"
+
+    user_hint = ""
+    if not user_token:
+        # Helpful guidance if the app didn’t get a user token
+        user_hint = """
+          <div class="help">
+            <strong>Heads up:</strong> We didn’t receive a user token (xoxp).<br/>
+            If you want Rephrasely to send messages <em>as you</em>, re-install and ensure the app requests
+            <code>user_scope</code> (e.g. <code>chat:write</code>) and you approve it.
+          </div>
+        """
+
+    body = f"""
+      <p class="ok">Install completed successfully.</p>
+
+      <div class="kv">
+        <div>Team</div><div><strong>{escape(team_name or "—")}</strong> ({escape(team_id or "—")})</div>
+        <div>User</div><div><strong>{escape(user_id or "—")}</strong></div>
+        <div>Bot token</div><div><code>{masked_bot}</code></div>
+        <div>User token</div><div><code>{masked_user}</code></div>
+      </div>
+
+      {user_hint}
+
+      <div class="hr"></div>
+
+      <div class="cta">
+        <a class="btn primary" href="https://slack.com/app_redirect?app={escape(CLIENT_ID)}">Open in Slack</a>
+        <a class="btn" href="{{{{ url_for('home') }}}}">Back to Home</a>
+        <span class="slack-btn">
+          <a class="btn" href="{{{{ url_for('install') }}}}">Install to another workspace</a>
+        </span>
+      </div>
     """
-    return html
+    return render_page("Install successful", body, status=200)
 
 
 
@@ -481,6 +692,17 @@ def get_latest_messages(channel_id: str, team_id: str, user_id: str, limit: int 
     except Exception as e:
         app.logger.error("conversations.history transport error: %s", e)
         return {}
+
+
+@app.get("/install")
+def install():
+    """
+    Redirects to Slack OAuth with a fresh state.
+    Use this as the href for your 'Add to Slack' button.
+    """
+    state = secrets.token_urlsafe(24)
+    session["oauth_state"] = state
+    return redirect(build_authorize_url(state))
 
 if __name__ == "__main__":
     app.run(port=5000)
