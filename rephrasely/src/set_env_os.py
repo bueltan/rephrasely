@@ -139,28 +139,6 @@ def write_env_file(env_vars: dict[str, str], path: str | os.PathLike):
     print(f"Environment file written to {p}")
 
 
-# if __name__ == "__main__":
-#     # --- Configure your YAML path here ---
-#     YAML_PATH = "/home/d_gimenez/apps/rephrasely/secrets_envs.yml"  # e.g., ~/.config/myapp/env.yml
-
-#     # Example YAML structure:
-#     # XAI_API_KEY: "..."
-#     # SLACK_USER_TOKEN: "..."
-#     # SLACK_BOT_TOKEN: "..."
-#     # SLACK_SIGNING_SECRET: "..."
-#     # SLACK_CLIENT_ID: "..."
-
-#     env_vars_to_set = load_env_from_yaml(YAML_PATH)
-
-#     # Set & persist
-#     set_env_variables(env_vars_to_set, persist=True)
-
-#     # Verify in the current Python process (won't print values to avoid leaking secrets)
-#     print("\nVerifying (current process):")
-#     for key in env_vars_to_set:
-#         val = os.getenv(key)
-#         print(f"{key} is {'SET' if (val is not None and val != '') else 'EMPTY/UNSET'}")
-
 from pathlib import Path
 import yaml
 import io, tempfile, os, time
