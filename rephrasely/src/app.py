@@ -193,7 +193,7 @@ def mask(token: str | None) -> str:
 
 @app.route("/")
 def home():
-    return home_html
+    return render_template_string(home_html)    
 
 
 

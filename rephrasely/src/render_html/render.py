@@ -1,3 +1,5 @@
+from flask import render_template_string
+
 def render_page(title: str, body_html: str, status: int = 200) -> tuple[str, int]:
     return render_template_string(f"""
 <!doctype html>
