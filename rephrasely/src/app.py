@@ -10,6 +10,7 @@ from rephrasely.src.grok_llm_rephrasely import rephrasely_method
 from rephrasely.src.os_env import get_user_environment_variable
 from rephrasely.src.render_html.render import render_page
 from rephrasely.src.set_env_os import save_tokens, read_all_tokens
+from rephrasely.src.render_html.home import home_html
 from rephrasely.src.render_html.privacy import privacy_html
 from rephrasely.src.render_html.support import support_html
 from rephrasely.src.render_html.terms import terms_html
