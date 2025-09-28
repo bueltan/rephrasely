@@ -8,7 +8,11 @@ from logging.handlers import RotatingFileHandler
 
 from rephrasely.src.grok_llm_rephrasely import rephrasely_method
 from rephrasely.src.os_env import get_user_environment_variable
+from rephrasely.src.render_html.render import render_page
 from rephrasely.src.set_env_os import save_tokens, read_all_tokens
+from rephrasely.src.render_html.privacy import privacy_html
+from rephrasely.src.render_html.support import support_html
+from rephrasely.src.render_html.terms import terms_html
 import secrets
 from urllib.parse import urlencode
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -89,56 +93,6 @@ USER_SCOPES = ["chat:write"]              # minimal user scope (add more if need
 
 
 
-def render_page(title: str, body_html: str, status: int = 200) -> tuple[str, int]:
-    return render_template_string(f"""
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>{{{{ title }}}}</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-      :root {{
-        --bg:#f6f7fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
-        --ok:#10b981; --warn:#f59e0b; --err:#ef4444; --link:#2563eb;
-        --border:#e5e7eb;
-      }}
-      /* ...existing CSS... */
-      .footer {{
-        margin-top: 28px;
-        text-align: center;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }}
-      .footer a {{
-        color: var(--link);
-        text-decoration: none;
-      }}
-      .footer a:hover {{
-        text-decoration: underline;
-      }}
-    </style>
-  </head>
-  <body>
-    <main class="card">
-      <div class="head">
-        <img class="logo" alt="Rephrasely" src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png" />
-        <div>
-          <h1>{{{{ title }}}}</h1>
-          <div class="muted">Rephrasely • Your AI Slack Assistant</div>
-        </div>
-      </div>
-      {{{{ body_html|safe }}}}
-      <footer class="footer">
-        <p>
-          <a href="https://github.com/bueltan/rephrasely" target="_blank">Rephrasely on GitHub</a> · 
-          <a href="https://bueltan.github.io/" target="_blank">About me</a>
-        </p>
-      </footer>
-    </main>
-  </body>
-</html>
-    """, title=title), status
 
 
 # ---------- pretty error pages ----------
@@ -238,108 +192,7 @@ def mask(token: str | None) -> str:
 
 @app.route("/")
 def home():
-    return render_template_string("""
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Rephrasely • Your AI Slack Assistant</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        background: #f9fafb;
-        color: #333;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-        padding: 40px 20px;
-        text-align: center;
-      }
-      h1 {
-        font-size: 2.2rem;
-        margin: 1rem 0 0.5rem;
-      }
-      p {
-        max-width: 640px;
-        font-size: 1.1rem;
-        line-height: 1.5;
-      }
-      .logo {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      }
-      .slack-btn {
-        margin-top: 20px;
-      }
-      .usage {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 12px 18px;
-        margin: 24px auto;
-        font-family: monospace;
-        font-size: 1rem;
-        color: #222;
-        display: inline-block;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      }
-      iframe {
-        margin-top: 40px;
-        width: 560px;
-        max-width: 100%;
-        aspect-ratio: 16 / 9;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      }
-    </style>
-  </head>
-  <body>
-    <img src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png"
-         alt="Rephrasely Logo"
-         class="logo" />
-
-    <h1>Rephrasely</h1>
-    <p>
-      Rephrasely is your intelligent Slack assistant that helps you send clearer,
-      more thoughtful messages. Before your message goes out, Rephrasely uses AI
-      to refine your text—whether that means rephrasing for tone, improving clarity,
-      or aligning with your communication goals.
-    </p>
-
-    <div class="usage">/re Your original message here</div>
-
-    <div class="slack-btn">
-      <a href="{{ url_for('install') }}">
-        <img alt="Add to Slack" height="40" width="139"
-             src="https://platform.slack-edge.com/img/add_to_slack.png"
-             srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
-                     https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
-      </a>
-    </div>
-
-    <iframe src="https://www.youtube.com/embed/RkcwLKBhhLA"
-            title="Rephrasely how to use"
-            allowfullscreen></iframe>
-  </body>
-                                  
-<div style="margin-top:16px; font-size:.95rem; color:#555;">
-  <a href="{{ url_for('support') }}">Support</a> ·
-  <a href="{{ url_for('privacy') }}">Privacy</a> ·
-  <a href="{{ url_for('terms') }}">Terms</a> ·
-  <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub</a> ·
-  <a href="https://bueltan.github.io/" target="_blank">About</a>
-</div>
-
-
-                                
-</html>
-    """)
+    return home_html
 
 
 
@@ -698,218 +551,17 @@ def install():
 
 @app.route("/privacy")
 def privacy():
-    return render_template_string("""
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Rephrasely • Privacy Policy</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-      body {
-        margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-        background:#f9fafb; color:#1f2937;
-        display:flex; justify-content:center; padding:40px 20px;
-      }
-      main {
-        max-width:720px; background:#fff; border:1px solid #e5e7eb;
-        border-radius:16px; padding:32px;
-        box-shadow:0 8px 20px rgba(0,0,0,.06);
-      }
-      h1 { font-size:1.8rem; margin-top:0; }
-      p { line-height:1.6; margin:1em 0; }
-      a { color:#2563eb; text-decoration:none; }
-      a:hover { text-decoration:underline; }
-      footer { margin-top:24px; font-size:0.9rem; color:#6b7280; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Privacy Policy</h1>
-      <p>
-        Rephrasely is an open-source Slack app designed to help you refine and improve
-        your messages using AI. We respect your privacy and are committed to protecting it.
-      </p>
-      <p>
-        <strong>No message content is stored on our servers.</strong> All processing is performed
-        in memory and only for the purpose of generating improved message suggestions.
-      </p>
-      <p>
-        We may store minimal installation information (such as Slack team IDs, user IDs, and OAuth
-        tokens) solely for the purpose of enabling the app to function within your workspace.
-        This data is never shared with third parties and can be revoked at any time by removing
-        the app from Slack.
-      </p>
-      <p>
-        By using Rephrasely, you agree that your input messages are processed temporarily to
-        generate suggestions, but are not logged, retained, or sold.
-      </p>
-      <footer>
-        <p>
-          Open Source: <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub Repo</a> ·
-          <a href="https://bueltan.github.io/" target="_blank">About me</a>
-        </p>
-      </footer>
-    </main>
-  </body>
-</html>
-    """)
+    return privacy_html
 
 
 @app.route("/support")
 def support():
-    return render_template_string("""
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Rephrasely • Support</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-      :root {
-        --bg:#f6f7fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
-        --link:#2563eb; --border:#e5e7eb; --shadow:0 10px 25px rgba(0,0,0,.06);
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-        background:var(--bg); color:var(--text);
-        display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
-      }
-      main {
-        width:100%; max-width:820px; background:var(--card); border:1px solid var(--border);
-        border-radius:16px; padding:28px; box-shadow: var(--shadow);
-      }
-      .head { display:flex; gap:16px; align-items:center; margin-bottom:12px; }
-      .logo { width:64px; height:64px; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,.12); }
-      h1 { font-size:1.6rem; margin:0; }
-      .muted { color:var(--muted); margin-top:2px; }
-      p { line-height:1.6; }
-      .card {
-        background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px 18px;
-        margin:16px 0;
-      }
-      .btn {
-        display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid var(--border);
-        text-decoration:none; color:var(--text); background:#fff;
-      }
-      .btn.primary { background:#111827; color:#fff; border-color:#111827; }
-      a { color:var(--link); text-decoration:none; }
-      a:hover { text-decoration:underline; }
-      .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-      .hr { height:1px; background:var(--border); margin:22px 0; }
-      footer { margin-top:8px; color:var(--muted); font-size:.95rem; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <div class="head">
-        <img class="logo" alt="Rephrasely" src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png" />
-        <div>
-          <h1>Support</h1>
-          <div class="muted">How can we help you?</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <p>
-          Need help with installing or using Rephrasely? Feel free to reach out.
-        </p>
-        <div class="row">
-          <a class="btn primary"
-             href="mailto:denisbueltan@gmail.com?subject=Rephrasely%20Support&body=Hello%20Denis%2C%0A%0AI%20need%20help%20with%3A%0A-%20Workspace%20(Team%20ID)%3A%0A-%20Command%20or%20flow%20that%20failed%3A%0A-%20Error%20details%20(if%20any)%3A%0A%0AThank%20you!">
-             📧 Contact Support
-          </a>
-          <a class="btn" href="{{ url_for('home') }}">↩︎ Back to Home</a>
-          <a class="btn" href="{{ url_for('privacy') }}">Privacy Policy</a>
-          <a class="btn" href="{{ url_for('install') }}">Install to Slack</a>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="card">
-        <p class="muted"><strong>Quick Tips</strong></p>
-        <ul>
-          <li>To use: type <code>/re</code> followed by your message in Slack.</li>
-          <li>If you want messages to be sent <em>as you</em>, make sure you grant <code>user_scope</code> (e.g. <code>chat:write</code>) during installation.</li>
-          <li>Common issues: redirect URI mismatch, missing scopes (<code>commands</code>, <code>chat:write</code>), or invalid token.</li>
-        </ul>
-      </div>
-
-      <footer>
-        Open Source: <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub Repo</a> ·
-        <a href="https://bueltan.github.io/" target="_blank">About me</a>
-      </footer>
-    </main>
-  </body>
-</html>
-    """)
+    return support_html
 
 
 @app.route("/terms")
 def terms():
-    return render_template_string("""
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Rephrasely • Terms of Service</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-      :root {
-        --bg:#f6f7fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
-        --link:#2563eb; --border:#e5e7eb; --shadow:0 10px 25px rgba(0,0,0,.06);
-      }
-      body {
-        margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-        background:var(--bg); color:var(--text);
-        display:flex; justify-content:center; padding:40px 20px;
-      }
-      main {
-        width:100%; max-width:820px; background:var(--card); border:1px solid var(--border);
-        border-radius:16px; padding:32px; box-shadow: var(--shadow);
-      }
-      h1 { font-size:1.8rem; margin-top:0; }
-      p { line-height:1.6; margin:1em 0; }
-      a { color:var(--link); text-decoration:none; }
-      a:hover { text-decoration:underline; }
-      footer { margin-top:24px; font-size:0.9rem; color:var(--muted); }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Terms of Service</h1>
-      <p>
-        By installing and using Rephrasely, you agree to the following terms:
-      </p>
-      <p>
-        Rephrasely is provided as-is, without warranties of any kind. While we make every
-        effort to ensure reliability and security, we do not guarantee uninterrupted service
-        or error-free operation.
-      </p>
-      <p>
-        You are responsible for how you use the app within Slack, including compliance with
-        your organization’s policies and Slack’s <a href="https://slack.com/terms-of-service" target="_blank">Terms of Service</a>.
-      </p>
-      <p>
-        Rephrasely does not store your message content. Minimal installation data
-        (such as team IDs, user IDs, and OAuth tokens) is kept only to provide the app’s
-        functionality. You may revoke access at any time by uninstalling the app from Slack.
-      </p>
-      <p>
-        We reserve the right to update these Terms at any time. Continued use of the app
-        after changes indicates your acceptance of the new Terms.
-      </p>
-      <footer>
-        Open Source: <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub Repo</a> ·
-        <a href="https://bueltan.github.io/" target="_blank">About me</a>
-      </footer>
-    </main>
-  </body>
-</html>
-    """)
-
+    return terms_html
 
 if __name__ == "__main__":
     app.run(port=5000)
