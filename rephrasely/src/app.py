@@ -10,6 +10,7 @@ from rephrasely.src.grok_llm_rephrasely import rephrasely_method
 from rephrasely.src.os_env import get_user_environment_variable
 from rephrasely.src.render_html.render import render_page
 from rephrasely.src.set_env_os import save_tokens, read_all_tokens
+from rephrasely.src.render_html.home import home_html
 from rephrasely.src.render_html.privacy import privacy_html
 from rephrasely.src.render_html.support import support_html
 from rephrasely.src.render_html.terms import terms_html
@@ -192,7 +193,7 @@ def mask(token: str | None) -> str:
 
 @app.route("/")
 def home():
-    return home_html
+    return render_template_string(home_html)    
 
 
 
@@ -256,13 +257,11 @@ def oauth_callback():
     session["used_oauth_code"] = code
     session.pop("oauth_state", None)
 
-    # Success page content
     masked_bot  = escape(mask(bot_token))
     masked_user = escape(mask(user_token)) if user_token else "—"
 
     user_hint = ""
     if not user_token:
-        # Helpful guidance if the app didn’t get a user token
         user_hint = """
           <div class="help">
             <strong>Heads up:</strong> We didn’t receive a user token (xoxp).<br/>
@@ -272,26 +271,116 @@ def oauth_callback():
         """
 
     body = f"""
-      <p class="ok">Install completed successfully.</p>
+      <div class="wrap">
+        <img src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png"
+             alt="Rephrasely Logo"
+             class="logo" />
 
-      <div class="kv">
-        <div>Team</div><div><strong>{escape(team_name or "—")}</strong> ({escape(team_id or "—")})</div>
-        <div>User</div><div><strong>{escape(user_id or "—")}</strong></div>
-        <div>Bot token</div><div><code>{masked_bot}</code></div>
-        <div>User token</div><div><code>{masked_user}</code></div>
-      </div>
+        <h1>Install successful</h1>
+        <p class="sub">
+          Rephrasely is now connected to your Slack workspace.
+        </p>
 
-      {user_hint}
+        <div class="kv">
+          <div>Team</div><div><strong>{escape(team_name or "—")}</strong> ({escape(team_id or "—")})</div>
+          <div>User</div><div><strong>{escape(user_id or "—")}</strong></div>
+          <div>Bot token</div><div><code>{masked_bot}</code></div>
+          <div>User token</div><div><code>{masked_user}</code></div>
+        </div>
 
-      <div class="hr"></div>
+        {user_hint}
 
-      <div class="cta">
-        <a class="btn primary" href="https://slack.com/app_redirect?app={escape(CLIENT_ID)}">Open in Slack</a>
-        <a class="btn" href="{{{{ url_for('home') }}}}">Back to Home</a>
-        <span class="slack-btn">
+        <div class="cta">
+          <a class="btn primary" href="https://slack.com/app_redirect?app={escape(CLIENT_ID)}">Open in Slack</a>
+          <a class="btn" href="{{{{ url_for('home') }}}}">Back to Home</a>
           <a class="btn" href="{{{{ url_for('install') }}}}">Install to another workspace</a>
-        </span>
+        </div>
       </div>
+
+      <style>
+        .wrap {{
+          max-width: 720px;
+          margin: 40px auto;
+          padding: 0 20px;
+          text-align: center;
+          font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          color: #333;
+        }}
+        .logo {{
+          width: 96px;
+          height: 96px;
+          border-radius: 50%;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+          display: block;
+          margin: 0 auto 12px;
+        }}
+        h1 {{
+          font-size: 2rem;
+          margin: 0.6rem 0 0.4rem;
+        }}
+        .sub {{
+          max-width: 640px;
+          margin: 0 auto 20px;
+          line-height: 1.5;
+          font-size: 1.05rem;
+          color: #444;
+        }}
+        .kv {{
+          display: grid;
+          grid-template-columns: 140px 1fr;
+          gap: 10px 16px;
+          background: #fff;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          padding: 16px 20px;
+          margin: 18px auto 18px;
+          text-align: left;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }}
+        .kv > div:nth-child(odd) {{
+          color: #555;
+        }}
+        code {{
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+          font-size: 0.95rem;
+        }}
+        .help {{
+          text-align: left;
+          background: #fff7ed;
+          border: 1px solid #facc15;
+          color: #92400e;
+          padding: 12px 14px;
+          border-radius: 10px;
+          margin: 12px auto 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }}
+        .cta {{
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+          margin-top: 18px;
+        }}
+        .btn {{
+          display: inline-block;
+          padding: 10px 14px;
+          border-radius: 8px;
+          border: 1px solid #ddd;
+          background: #fff;
+          text-decoration: none;
+          color: #222;
+          font-weight: 600;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }}
+        .btn:hover {{
+          transform: translateY(-1px);
+        }}
+        .btn.primary {{
+          background: #4f46e5;
+          border-color: #4f46e5;
+          color: #fff;
+        }}
+      </style>
     """
     return render_page("Install successful", body, status=200)
 
