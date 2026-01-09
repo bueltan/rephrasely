@@ -66,7 +66,7 @@ home_html = """
 
     <h1>Rephrasely</h1>
     <p>
-      Rephrasely is your intelligent Slack assistant that helps you send clearer,
+      Rephrasely is a intelligent Slack assistant that helps you send clearer,
       more thoughtful messages. Before your message goes out, Rephrasely uses AI
       to refine your text—whether that means rephrasing for tone, improving clarity,
       or aligning with your communication goals.
