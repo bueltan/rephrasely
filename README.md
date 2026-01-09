@@ -1,4 +1,6 @@
 # Rephrasely
-![Avatar de Slack](https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png)
+[![Watch the video](https://img.youtube.com/vi/RkcwLKBhhLA/hqdefault.jpg)](https://www.youtube.com/watch?v=RkcwLKBhhLA)
 
 Rephrasely helps you send clearer, more thoughtful messages. Before your message goes out, Rephrasely uses AI to refine your text.
+
+
