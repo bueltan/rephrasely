@@ -144,7 +144,7 @@ import yaml
 import io, tempfile, os, time
 from datetime import datetime, timezone
 
-TOKENS_FILE = Path("/home/d_gimenez/apps/rephrasely/tokens.yml")
+TOKENS_FILE = Path("/home/denis/apps/rephrasely/tokens.yml")
 
 
 def _now_iso() -> str:

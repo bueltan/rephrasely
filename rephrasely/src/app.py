@@ -81,7 +81,7 @@ REDIRECT_URI = ( get_user_environment_variable("SLACK_REDIRECT_URI") or
 if not CLIENT_ID or not CLIENT_SECRET:
     raise ValueError("SLACK_CLIENT_ID and SLACK_CLIENT_SECRET must be set in environment variables.")
 
-TOKENS_FILE = Path("/home/d_gimenez/apps/rephrasely/tokens.yml")
+TOKENS_FILE = Path("/home/denis/apps/rephrasely/tokens.yml")
 
 @app.get("/_test/session")
 def _test_session():
