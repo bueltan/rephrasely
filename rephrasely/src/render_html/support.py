@@ -44,7 +44,8 @@ support_html = """
   <body>
     <main>
       <div class="head">
-        <img class="logo" alt="Rephrasely" src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png" />
+        <img class="logo" alt="Rephrasely"
+             src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png" />
         <div>
           <h1>Support</h1>
           <div class="muted">How can we help you?</div>
@@ -60,9 +61,11 @@ support_html = """
              href="mailto:denisbueltan@gmail.com?subject=Rephrasely%20Support&body=Hello%20Denis%2C%0A%0AI%20need%20help%20with%3A%0A-%20Workspace%20(Team%20ID)%3A%0A-%20Command%20or%20flow%20that%20failed%3A%0A-%20Error%20details%20(if%20any)%3A%0A%0AThank%20you!">
              📧 Contact Support
           </a>
-          <a class="btn" href="{{ url_for('home') }}">↩︎ Back to Home</a>
-          <a class="btn" href="{{ url_for('privacy') }}">Privacy Policy</a>
-          <a class="btn" href="{{ url_for('install') }}">Install to Slack</a>
+
+          <a class="btn" href="/">↩︎ Back to Home</a>
+          <a class="btn" href="/privacy">Privacy Policy</a>
+          <a class="btn" href="/terms">Terms</a>
+          <a class="btn" href="/install">Install to Slack</a>
         </div>
       </div>
 
@@ -78,10 +81,10 @@ support_html = """
       </div>
 
       <footer>
-        Open Source: <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub Repo</a> ·
-        <a href="https://bueltan.github.io/" target="_blank">About me</a>
+        Open Source: <a href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">GitHub Repo</a> ·
+        <a href="https://bueltan.github.io/" target="_blank" rel="noopener noreferrer">About me</a>
       </footer>
     </main>
   </body>
 </html>
-    """
+"""
