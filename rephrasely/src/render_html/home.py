@@ -1,4 +1,3 @@
-home_html = """
 <!doctype html>
 <html lang="en">
   <head>
@@ -57,6 +56,31 @@ home_html = """
         border-radius: 12px;
         box-shadow: 0 4px 16px rgba(0,0,0,0.15);
       }
+      .ai-disclaimer {
+        margin: 20px auto 0;
+        max-width: 640px;
+        background: #fff3cd;
+        border: 1px solid #ffe69c;
+        color: #664d03;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+      .footer-links {
+        margin-top: 24px;
+        font-size: .95rem;
+        color: #555;
+      }
+      .footer-links a {
+        color: #555;
+        text-decoration: none;
+        margin: 0 6px;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -66,11 +90,18 @@ home_html = """
 
     <h1>Rephrasely</h1>
     <p>
-      Rephrasely is a intelligent Slack assistant that helps you send clearer,
+      Rephrasely is a intelligent assistant that helps you send clearer,
       more thoughtful messages. Before your message goes out, Rephrasely uses AI
       to refine your text—whether that means rephrasing for tone, improving clarity,
       or aligning with your communication goals.
     </p>
+
+    <div class="ai-disclaimer">
+      ⚠️ <strong>AI Disclaimer:</strong> Rephrasely uses artificial intelligence to generate message
+      suggestions. These responses may be inaccurate, incomplete, or misleading and should not be
+      relied upon as a sole source of truth. Always review and verify important information before
+      sending.
+    </div>
 
     <div class="usage">/re Your original message here</div>
 
@@ -86,17 +117,13 @@ home_html = """
     <iframe src="https://www.youtube.com/embed/RkcwLKBhhLA"
             title="Rephrasely how to use"
             allowfullscreen></iframe>
+
+    <div class="footer-links">
+      <a href="{{ url_for('support') }}">Support</a> ·
+      <a href="{{ url_for('privacy') }}">Privacy</a> ·
+      <a href="{{ url_for('terms') }}">Terms</a> ·
+      <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub</a> ·
+      <a href="https://bueltan.github.io/" target="_blank">About</a>
+    </div>
   </body>
-                                  
-<div style="margin-top:16px; font-size:.95rem; color:#555;">
-  <a href="{{ url_for('support') }}">Support</a> ·
-  <a href="{{ url_for('privacy') }}">Privacy</a> ·
-  <a href="{{ url_for('terms') }}">Terms</a> ·
-  <a href="https://github.com/bueltan/rephrasely" target="_blank">GitHub</a> ·
-  <a href="https://bueltan.github.io/" target="_blank">About</a>
-</div>
-
-
-                                
 </html>
-    """
