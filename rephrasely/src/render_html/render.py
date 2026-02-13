@@ -36,7 +36,7 @@ def render_page(title: str, body_html: str, status: int = 200) -> tuple[str, int
         <img class="logo" alt="Rephrasely" src="https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png" />
         <div>
           <h1>{{{{ title }}}}</h1>
-          <div class="muted">Rephrasely • Your AI Slack Assistant</div>
+          <div class="muted">Rephrasely •  Assistant</div>
         </div>
       </div>
       {{{{ body_html|safe }}}}

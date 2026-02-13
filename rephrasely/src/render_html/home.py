@@ -104,7 +104,7 @@ home_html = """
       sending.
     </div>
 
-    <div class="usage">/re Your original message here</div>
+    <div class="usage">/rephrasely Your original message here</div>
 
     <div class="slack-btn">
       <a href="{{ url_for('install') }}">
@@ -115,7 +115,7 @@ home_html = """
       </a>
     </div>
 
-    <iframe src="https://www.youtube.com/embed/RkcwLKBhhLA"
+    <iframe src="https://www.youtube.com/embed/DN5VTZUfhE4"
             title="Rephrasely how to use"
             allowfullscreen></iframe>
 

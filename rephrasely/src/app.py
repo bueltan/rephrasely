@@ -1,11 +1,17 @@
 import os
+import hmac
+import hashlib
+import time
+import requests
+import logging
+import secrets
 from pathlib import Path
 from flask import (Flask, abort, redirect, request,session, json, render_template_string, jsonify, url_for)
 from threading import Thread
-import requests
-import logging
+from urllib.parse import urlencode
+from werkzeug.middleware.proxy_fix import ProxyFix
+from markupsafe import escape
 from logging.handlers import RotatingFileHandler
-
 from rephrasely.src.grok_llm_rephrasely import rephrasely_method
 from rephrasely.src.os_env import get_user_environment_variable
 from rephrasely.src.render_html.render import render_page
@@ -14,10 +20,7 @@ from rephrasely.src.render_html.home import home_html
 from rephrasely.src.render_html.privacy import privacy_html
 from rephrasely.src.render_html.support import support_html
 from rephrasely.src.render_html.terms import terms_html
-import secrets
-from urllib.parse import urlencode
-from werkzeug.middleware.proxy_fix import ProxyFix
-from markupsafe import escape
+
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]  # rephrasely/src/app.py → parents[2] = repo root
@@ -77,6 +80,9 @@ CLIENT_SECRET = get_user_environment_variable("SLACK_CLIENT_SECRET") or ""
 REDIRECT_URI = ( get_user_environment_variable("SLACK_REDIRECT_URI") or
                 "https://rephrasely.com.ar/slack/oauth/callback")
 
+SLACK_SIGNING_SECRET = get_user_environment_variable("SLACK_SIGNING_SECRET") or ""
+if not SLACK_SIGNING_SECRET:
+    raise ValueError("SLACK_SIGNING_SECRET must be set")
 
 if not CLIENT_ID or not CLIENT_SECRET:
     raise ValueError("SLACK_CLIENT_ID and SLACK_CLIENT_SECRET must be set in environment variables.")
@@ -94,6 +100,45 @@ USER_SCOPES = ["chat:write"]              # minimal user scope (add more if need
 
 
 
+def verify_slack_request() -> bool:
+    """
+    Verify the request is from Slack using Signing Secret.
+    Returns True if valid, False otherwise.
+    """
+    timestamp = request.headers.get("X-Slack-Request-Timestamp")
+    if timestamp is None:
+        return False
+
+    try:
+        timestamp = int(timestamp)
+    except ValueError:
+        return False
+
+    if abs(time.time() - timestamp) > 60 * 5:
+        app.logger.warning("Slack request timestamp out of window")
+        return False
+
+    signature = request.headers.get("X-Slack-Signature")
+    if signature is None:
+        return False
+
+    raw_body = request.get_data(as_text=True)  
+
+    base_string = f"v0:{timestamp}:{raw_body}"
+
+    computed = hmac.new(
+        SLACK_SIGNING_SECRET.encode("utf-8"),
+        base_string.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()
+
+    expected_signature = f"v0={computed}"
+
+    if not hmac.compare_digest(expected_signature, signature):
+        app.logger.warning("Invalid Slack signature")
+        return False
+
+    return True
 
 
 # ---------- pretty error pages ----------
@@ -226,7 +271,6 @@ def oauth_callback():
     app.logger.debug("OAuth response: %s", data)
 
     if not data.get("ok"):
-        # Example: {"ok": false, "error": "invalid_code"}
         return abort(400, description=f"Slack error: {data.get('error','unknown')}")
 
     # Extract tokens and ids
@@ -385,10 +429,6 @@ def oauth_callback():
     return render_page("Install successful", body, status=200)
 
 
-
-# =========================
-# Debug routes (updated)
-# =========================
 def _slack_auth_test(token: str) -> dict:
     """Hit auth.test with any token to inspect who it is."""
     r = requests.post(
@@ -467,28 +507,45 @@ def open_working_modal(trigger_id: str, channel_id: str, team_id: str) -> str:
 
 @app.route("/slack/rephrasely", methods=["POST"])
 def handle_command():
-    """
-    Slash command entrypoint:
-      1) Open a quick 'Working…' modal immediately (within 3s).
-      2) Kick off background work; when done, update the modal to the editable version.
-    """
+    if not verify_slack_request():
+        abort(403)  # or 401 — 403 is common for forbidden/unauthorized Slack requests
     data = request.form
     trigger_id   = data.get("trigger_id")
     channel_id   = data.get("channel_id")
-    team_id      = data.get("team_id")  # <-- IMPORTANT
-    original_text = data.get("text", "")
+    team_id      = data.get("team_id")
+    user_id      = data.get("user_id")    
+    text         = data.get("text", "").strip()
 
     if not team_id:
-        # Slack always sends team_id for slash commands, but guard anyway
-        app.logger.error("Missing team_id in slash command payload")
+        app.logger.error("Missing team_id")
         return "", 200
 
+    # ── Help / empty input ────────────────────────────────────────────────────
+    if not text or text.strip().lower() == "help":
+        success = open_help_modal(trigger_id, team_id)
+        
+        if not success:
+            # Fallback to ephemeral message if modal fails to open
+            fallback_text = (
+                "Sorry, couldn't open the help modal right now.\n\n"
+                "*Quick usage:*\n"
+                "Type `/rephrasely your text here` to get a rephrased suggestion.\n"
+                "Example: `/rephrasely this sentence is too long and boring`\n\n"
+                "Visit https://rephrasely.com.ar/support for more help."
+            )
+            return jsonify({
+                "response_type": "ephemeral",
+                "text": fallback_text
+            }), 200
+
+        return "", 200  # Modal opened successfully → acknowledge command
+
+    # ── Normal flow ───────────────────────────────────────────────────────
     view_id = open_working_modal(trigger_id, channel_id, team_id)
 
-    # 2) Process in background and update the modal when done
     Thread(
         target=process_and_update_modal,
-        args=(view_id, channel_id, team_id, original_text),
+        args=(view_id, channel_id, team_id, text),  # pass original text
         daemon=True,
     ).start()
 
@@ -547,7 +604,73 @@ def update_modal_with_result(view_id: str, channel_id: str, team_id: str, sugges
     except Exception as e: # pylint: disable=broad-except
         app.logger.error("views.update transport error: %s", e)
 
-        
+
+def open_help_modal(trigger_id: str, team_id: str) -> bool:
+    """
+    Opens an informational help modal using views.open.
+    Returns True if the request was sent successfully (acknowledgement),
+    False if it failed (in which case caller can fallback).
+    """
+    help_view = {
+        "type": "modal",
+        "callback_id": "help_modal",
+        "title": {"type": "plain_text", "text": "Rephrasely Help"},
+        "close": {"type": "plain_text", "text": "Close"},
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        "*Welcome to Rephrasely!*\n\n"
+                        "Quickly improve, rephrase, or polish your messages.\n\n"
+                        "*How to use:*\n"
+                        "• Type `/rephrasely` followed by your text\n"
+                        "  Example: `/rephrasely this is very bad text lol`\n"
+                        "• A modal opens with an AI suggestion\n"
+                        "• Edit if needed → click *Send* to post as yourself\n\n"
+                        "*Tips:*\n"
+                        "• Works best with full sentences or paragraphs\n"
+                        "• Messages are sent *as you* (not as a bot)\n\n"
+                        "*Support / Feedback*\n"
+                        "<https://rephrasely.com.ar/support|Contact support> • "
+                        "<https://rephrasely.com.ar/privacy|Privacy> • "
+                        "<https://rephrasely.com.ar/terms|Terms>"
+                    )
+                }
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "Tip: Try `/rephrasely help` anytime"
+                    }
+                ]
+            }
+        ]
+    }
+
+    payload = {
+        "trigger_id": trigger_id,
+        "view": help_view
+    }
+
+    try:
+        r = requests.post(
+            SLACK_VIEWS_OPEN,
+            headers=_bot_headers(team_id),
+            json=payload,
+            timeout=10
+        )
+        response = r.json()
+        if not response.get("ok"):
+            app.logger.error(f"views.open for help failed: {response.get('error')}")
+            return False
+        return True
+    except Exception as e:
+        app.logger.error(f"views.open transport error for help: {e}")
+        return False
 # =========================
 # Interactions handler (updated)
 # =========================

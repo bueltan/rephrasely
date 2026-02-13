@@ -74,7 +74,7 @@ support_html = """
       <div class="card">
         <p class="muted"><strong>Quick Tips</strong></p>
         <ul>
-          <li>To use: type <code>/re</code> followed by your message in Slack.</li>
+          <li>To use: type <code>/rephrasely</code> followed by your message in Slack.</li>
           <li>If you want messages to be sent <em>as you</em>, make sure you grant <code>user_scope</code> (e.g. <code>chat:write</code>) during installation.</li>
           <li>Common issues: redirect URI mismatch, missing scopes (<code>commands</code>, <code>chat:write</code>), or invalid token.</li>
         </ul>

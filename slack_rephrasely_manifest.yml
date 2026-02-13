@@ -8,7 +8,7 @@ features:
     display_name: Rephrasely
     always_online: true
   slash_commands:
-    - command: /re
+    - command: /rephrasely
       url: https://rephrasely.com.ar/slack/rephrasely
       description: Applies an ia prompt to the message
       usage_hint: "[text to update with ia]"
