@@ -32,7 +32,17 @@
 </section>
 
 <main class="page">
-  <section aria-labelledby="benefits-title" class="section" style="margin-top: 0;">
+  <section aria-labelledby="demo-title" class="section center" style="margin-top: 0;">
+    <p class="kicker">Product demo</p>
+    <h2 id="demo-title">See Rephrasely in Slack</h2>
+    <iframe class="video"
+            src="https://www.youtube.com/embed/DN5VTZUfhE4"
+            title="How to use Rephrasely in Slack"
+            loading="lazy"
+            allowfullscreen></iframe>
+  </section>
+
+  <section aria-labelledby="benefits-title" class="section">
     <div class="section-header">
       <p class="kicker">Why it helps</p>
       <h2 id="benefits-title">Clearer messages with less context switching</h2>
@@ -93,9 +103,9 @@
     </div>
   </section>
 
-  <section aria-labelledby="demo-title" class="section center">
+  <section aria-labelledby="slash-command-title" class="section center">
     <p class="kicker">Slash command</p>
-    <h2 id="demo-title">Try it from any Slack channel</h2>
+    <h2 id="slash-command-title">Try it from any Slack channel</h2>
     <div class="usage">/rephrasely Your original message here</div>
     <div class="slack-btn" aria-label="Official Slack installation button">
       <a href="{{ url_for('install') }}" aria-label="Add Rephrasely to Slack with Slack OAuth">
@@ -104,26 +114,6 @@
              srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
                      https://platform.slack-edge.com/img/add_to_slack@2x.png 2x">
       </a>
-    </div>
-    <iframe class="video"
-            src="https://www.youtube.com/embed/DN5VTZUfhE4"
-            title="How to use Rephrasely in Slack"
-            loading="lazy"
-            allowfullscreen></iframe>
-  </section>
-
-  <section aria-labelledby="creator-title" class="section">
-    <div class="section-header">
-      <p class="kicker">Creator</p>
-      <h2 id="creator-title">Built by Denis Gimenez</h2>
-      <p>
-        Rephrasely is an open-source project by Denis Gimenez. Learn more about the work behind it
-        on the personal site or connect on LinkedIn.
-      </p>
-    </div>
-    <div class="row">
-      <a class="btn secondary" href="https://www.denisgimenez.com" target="_blank" rel="noopener noreferrer">Personal website</a>
-      <a class="btn secondary" href="https://www.linkedin.com/in/denis-gimenez/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     </div>
   </section>
 
