@@ -58,14 +58,16 @@
         display: flex;
         align-items: flex-end;
         background-position: center;
-        background-size: cover;
-        color: #fff;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-color: #eef3fb;
+        color: var(--text);
       }
       .hero::before {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(90deg, rgba(6, 12, 29, .82), rgba(6, 12, 29, .48), rgba(6, 12, 29, .18));
+        background: linear-gradient(90deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .76), rgba(255, 255, 255, .18));
         pointer-events: none;
       }
       .hero {
@@ -83,7 +85,7 @@
         gap: 10px;
         margin-bottom: 20px;
         font-weight: 800;
-        color: #fff;
+        color: var(--text);
       }
       .brand-mark img {
         width: 38px;
@@ -100,11 +102,11 @@
       .hero .lead {
         max-width: 640px;
         margin: 0;
-        color: rgba(255,255,255,.9);
+        color: #263244;
         font-size: 1.18rem;
       }
       .hero .kicker {
-        color: #67e8f9;
+        color: var(--green);
       }
       .hero-actions {
         display: flex;
@@ -258,7 +260,8 @@
       }
       @media (max-width: 640px) {
         .hero { min-height: 590px; background-position: 62% center; }
-        .hero::before { background: linear-gradient(180deg, rgba(6, 12, 29, .5), rgba(6, 12, 29, .86)); }
+        .hero { background-size: cover; }
+        .hero::before { background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,.94)); }
         .hero-inner { width: min(100% - 24px, 1120px); padding-bottom: 34px; }
         .hero h1 { font-size: 2.35rem; }
         .page { width: min(100% - 24px, 900px); padding: 24px 0; }
