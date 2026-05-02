@@ -7,7 +7,7 @@ import secrets
 from logging.handlers import RotatingFileHandler
 from threading import Thread
 
-from flask import Flask, Response, abort, json, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, Response, abort, json, jsonify, redirect, render_template, request, send_file, session, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from rephrasely.config import Settings
@@ -19,34 +19,59 @@ from rephrasely.token_store import TokenStore
 
 LOGO_URL = "https://avatars.slack-edge.com/2025-07-27/9256789801219_5f9092f24cb6e34a01a0_192.png"
 LASTMOD = "2026-05-02"
+OG_IMAGE_PATH = "/assets/image-about.png"
 
 PAGE_META = {
     "home": {
         "path": "/",
-        "title": "Rephrasely | Open-source AI Slack assistant",
+        "title": "Rephrasely | AI Slack Assistant for Clearer Messages",
         "description": (
-            "Rephrasely is an open-source AI Slack assistant that rewrites, translates, "
-            "and polishes messages before you send them."
+            "Rephrasely is an open-source AI Slack assistant that rewrites, translates, and polishes "
+            "team messages before they are sent."
         ),
+        "keywords": "AI Slack assistant, Slack writing assistant, rewrite Slack messages, Slack translation app",
         "priority": "1.0",
+        "changefreq": "weekly",
+        "lastmod": LASTMOD,
     },
     "privacy": {
         "path": "/privacy",
         "title": "Privacy Policy | Rephrasely",
         "description": "Learn how Rephrasely handles Slack installation data and AI message processing.",
+        "keywords": "Rephrasely privacy, Slack app privacy, AI message processing privacy",
         "priority": "0.6",
+        "changefreq": "monthly",
+        "lastmod": LASTMOD,
     },
     "support": {
         "path": "/support",
         "title": "Support | Rephrasely",
         "description": "Get help installing, configuring, and using the Rephrasely Slack app.",
+        "keywords": "Rephrasely support, Slack app help, install Rephrasely",
         "priority": "0.7",
+        "changefreq": "monthly",
+        "lastmod": LASTMOD,
     },
     "terms": {
         "path": "/terms",
         "title": "Terms of Service | Rephrasely",
         "description": "Read the terms for installing and using the Rephrasely Slack app.",
+        "keywords": "Rephrasely terms, Slack app terms, AI writing assistant terms",
         "priority": "0.5",
+        "changefreq": "yearly",
+        "lastmod": LASTMOD,
+    },
+    "paid_landing": {
+        "path": "/slack-ai-writing-assistant",
+        "title": "AI Slack Writing Assistant | Rephrasely",
+        "description": (
+            "Install Rephrasely to rewrite, translate, and polish Slack messages with an open-source "
+            "AI writing assistant."
+        ),
+        "keywords": "AI Slack writing assistant, Slack message rewriter, Slack AI tool, Slack productivity app",
+        "priority": "0.8",
+        "changefreq": "weekly",
+        "lastmod": LASTMOD,
     },
 }
 
@@ -58,6 +83,7 @@ def create_app(settings: Settings | None = None) -> Flask:
 
     app = Flask(__name__)
     app.config.update(
+        REPHRASELY_SETTINGS=settings,
         SECRET_KEY=settings.flask_secret_key,
         SESSION_PERMANENT=False,
         SESSION_COOKIE_HTTPONLY=True,
@@ -258,6 +284,14 @@ def create_app(settings: Settings | None = None) -> Flask:
         """Render the support page."""
         return render_template("support.html", **page_context(settings, "support"))
 
+    @app.route("/slack-ai-writing-assistant")
+    def paid_landing():
+        """Render a focused landing page for paid and campaign traffic."""
+        return render_template(
+            "paid_landing.html",
+            **page_context(settings, "paid_landing", structured_data=paid_landing_structured_data(settings)),
+        )
+
     @app.route("/terms")
     def terms():
         """Render the terms of service page."""
@@ -275,17 +309,20 @@ def create_app(settings: Settings | None = None) -> Flask:
     @app.route("/sitemap.xml")
     def sitemap_xml():
         """Render the XML sitemap for public pages."""
-        pages = [
-            {
-                "loc": f"{settings.site_url}{meta['path']}",
-                "lastmod": LASTMOD,
-                "changefreq": "weekly",
-                "priority": meta["priority"],
-            }
-            for meta in PAGE_META.values()
-        ]
-        body = render_template("sitemap.xml", pages=pages)
-        return Response(body, mimetype="application/xml")
+        body = render_template("sitemap.xml", pages=sitemap_pages(settings))
+        response = Response(body, mimetype="application/xml; charset=utf-8")
+        response.headers["X-Robots-Tag"] = "noindex"
+        return response
+
+    @app.route("/assets/image-about.png")
+    def image_about():
+        """Serve the Open Graph preview image."""
+        return send_file(settings.repo_root / "image_about.png", mimetype="image/png", max_age=86400)
+
+    @app.route("/favicon.ico")
+    def favicon():
+        """Serve the browser favicon."""
+        return send_file(settings.repo_root / "favicon.png", mimetype="image/png", max_age=86400)
 
     return app
 
@@ -346,9 +383,27 @@ def page_context(
         "description": meta["description"],
         "canonical_url": f"{settings.site_url}{meta['path']}",
         "logo_url": LOGO_URL,
+        "og_image_url": f"{settings.site_url}{OG_IMAGE_PATH}",
+        "keywords": meta["keywords"],
         "robots": robots,
         "structured_data": structured_data or organization_structured_data(settings),
     }
+
+
+def sitemap_pages(settings: Settings) -> list[dict]:
+    """Build ordered sitemap entries for indexable public pages."""
+    return [
+        {
+            "loc": f"{settings.site_url}{meta['path']}",
+            "lastmod": meta["lastmod"],
+            "changefreq": meta["changefreq"],
+            "priority": meta["priority"],
+        }
+        for meta in sorted(
+            PAGE_META.values(),
+            key=lambda item: (-float(item["priority"]), item["path"]),
+        )
+    ]
 
 
 def organization_structured_data(settings: Settings) -> dict:
@@ -362,6 +417,12 @@ def organization_structured_data(settings: Settings) -> dict:
         "url": settings.site_url,
         "image": LOGO_URL,
         "description": PAGE_META["home"]["description"],
+        "featureList": [
+            "Rewrite Slack messages",
+            "Translate drafts into natural English",
+            "Improve grammar and tone",
+            "Edit suggestions before sending",
+        ],
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
         "creator": {
             "@type": "Person",
@@ -391,6 +452,14 @@ def home_structured_data(settings: Settings) -> dict:
                     },
                     {
                         "@type": "Question",
+                        "name": "Who is Rephrasely for?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Rephrasely is useful for teams that want clearer Slack messages, better English drafts, and faster message editing.",
+                        },
+                    },
+                    {
+                        "@type": "Question",
                         "name": "Does Rephrasely store message content?",
                         "acceptedAnswer": {
                             "@type": "Answer",
@@ -405,7 +474,36 @@ def home_structured_data(settings: Settings) -> dict:
                             "text": "Type /rephrasely followed by your message in Slack, review the suggestion, and send it.",
                         },
                     },
+                    {
+                        "@type": "Question",
+                        "name": "Can I self-host Rephrasely?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Yes. Rephrasely is open source and can be deployed with Flask, Gunicorn, and your own Slack app credentials.",
+                        },
+                    },
                 ],
+            },
+        ],
+    }
+
+
+def paid_landing_structured_data(settings: Settings) -> dict:
+    """Build structured data for the campaign landing page."""
+    return {
+        "@context": "https://schema.org",
+        "@graph": [
+            organization_structured_data(settings),
+            {
+                "@type": "WebPage",
+                "name": PAGE_META["paid_landing"]["title"],
+                "url": f"{settings.site_url}{PAGE_META['paid_landing']['path']}",
+                "description": PAGE_META["paid_landing"]["description"],
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "name": "Rephrasely",
+                    "url": settings.site_url,
+                },
             },
         ],
     }

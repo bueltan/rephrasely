@@ -5,20 +5,25 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ title }}</title>
     <meta name="description" content="{{ description }}">
+    <meta name="keywords" content="{{ keywords }}">
+    <meta name="author" content="Denis Gimenez">
+    <meta name="theme-color" content="#111827">
     <link rel="canonical" href="{{ canonical_url }}">
     <meta name="robots" content="{{ robots|default('index,follow') }}">
+    <link rel="icon" href="{{ url_for('favicon') }}" type="image/png">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Rephrasely">
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="{{ description }}">
     <meta property="og:url" content="{{ canonical_url }}">
-    <meta property="og:image" content="{{ logo_url }}">
+    <meta property="og:image" content="{{ og_image_url }}">
+    <meta property="og:image:alt" content="Rephrasely AI Slack assistant preview">
 
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
     <meta name="twitter:description" content="{{ description }}">
-    <meta name="twitter:image" content="{{ logo_url }}">
+    <meta name="twitter:image" content="{{ og_image_url }}">
 
     <script type="application/ld+json">
       {{ structured_data|tojson }}
@@ -35,6 +40,8 @@
         --accent: #111827;
         --warning-bg: #fff7ed;
         --warning-border: #fed7aa;
+        --success-bg: #ecfdf5;
+        --success-border: #a7f3d0;
       }
       * { box-sizing: border-box; }
       body {
@@ -84,6 +91,23 @@
         margin: 0 auto 20px;
         font-size: 1.1rem;
       }
+      .kicker {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: .95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+        text-align: left;
+      }
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
       .muted { color: var(--muted); }
       .usage {
         background: #fff;
@@ -106,6 +130,13 @@
         font-size: .95rem;
       }
       .slack-btn { margin-top: 20px; }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+      }
       .video {
         margin-top: 36px;
         width: 560px;
@@ -137,7 +168,21 @@
         color: #fff;
         border-color: var(--accent);
       }
+      .btn.secondary {
+        background: var(--success-bg);
+        border-color: var(--success-border);
+      }
       .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      .section {
+        margin-top: 32px;
+        text-align: left;
+      }
+      .metric {
+        background: var(--success-bg);
+        border: 1px solid var(--success-border);
+        border-radius: 8px;
+        padding: 12px 14px;
+      }
       footer {
         margin-top: 24px;
         color: var(--muted);
@@ -149,6 +194,8 @@
         .panel { padding: 20px; }
         .head { align-items: flex-start; }
         h1 { font-size: 1.65rem; }
+        .grid,
+        .grid.two { grid-template-columns: 1fr; }
       }
     </style>
   </head>

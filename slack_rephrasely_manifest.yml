@@ -1,8 +1,8 @@
 display_information:
   name: Rephrasely
-  description: Rephrasely  helps you send clearer, more thoughtful messages. Before your message goes out, Rephrasely uses AI to refine your text.
+  description: Rephrasely helps you send clearer, more thoughtful Slack messages with AI.
   background_color: "#268bff"
-  long_description: Rephrasely is your intelligent Slack assistant that helps you send clearer, more thoughtful messages. Before your message goes out, Rephrasely uses AI to refine your text—whether that means rephrasing for tone, improving clarity, or aligning with your communication goals.
+  long_description: Rephrasely is an AI Slack assistant that helps teams rewrite, translate, and polish messages before sending them. Use the slash command to generate an editable suggestion, review the result, and send the final message as yourself.
 features:
   bot_user:
     display_name: Rephrasely
@@ -10,8 +10,8 @@ features:
   slash_commands:
     - command: /rephrasely
       url: https://rephrasely.com.ar/slack/rephrasely
-      description: Applies an ia prompt to the message
-      usage_hint: "[text to update with ia]"
+      description: Rewrite, translate, or polish a Slack message with AI
+      usage_hint: "[message to improve]"
       should_escape: false
 oauth_config:
   redirect_urls:

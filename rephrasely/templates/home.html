@@ -4,11 +4,17 @@
 <main class="page center">
   <img src="{{ logo_url }}" alt="Rephrasely logo" class="logo">
 
-  <h1>Rephrasely</h1>
+  <p class="kicker">Open-source AI writing assistant for Slack</p>
+  <h1>AI Slack Assistant for Clearer Team Messages</h1>
   <p class="lead">
-    Rephrasely is an open-source AI Slack assistant that helps you rewrite,
-    translate, and polish messages before sending them.
+    Rephrasely helps teams rewrite, translate, and polish Slack messages before sending them.
+    Use a simple slash command to turn rough drafts into clear, natural communication.
   </p>
+
+  <div class="hero-actions">
+    <a class="btn primary" href="{{ url_for('install') }}">Add to Slack</a>
+    <a class="btn" href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">View source</a>
+  </div>
 
   <div class="ai-disclaimer">
     <strong>AI disclaimer:</strong> Rephrasely generates suggestions with artificial intelligence.
@@ -17,8 +23,8 @@
 
   <div class="usage">/rephrasely Your original message here</div>
 
-  <div class="slack-btn">
-    <a href="{{ url_for('install') }}" aria-label="Add Rephrasely to Slack">
+  <div class="slack-btn" aria-label="Official Slack installation button">
+    <a href="{{ url_for('install') }}" aria-label="Add Rephrasely to Slack with Slack OAuth">
       <img alt="Add to Slack" height="40" width="139"
            src="https://platform.slack-edge.com/img/add_to_slack.png"
            srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
@@ -32,14 +38,68 @@
           loading="lazy"
           allowfullscreen></iframe>
 
-  <section aria-labelledby="faq-title" class="panel" style="margin-top: 32px; text-align: left;">
+  <section aria-labelledby="benefits-title" class="section">
+    <h2 id="benefits-title">Why teams use Rephrasely</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Clearer writing</h3>
+        <p>Improve grammar, tone, and flow before a Slack message reaches your team.</p>
+      </article>
+      <article class="card">
+        <h3>Fast translation</h3>
+        <p>Turn multilingual drafts into natural English while preserving the original meaning.</p>
+      </article>
+      <article class="card">
+        <h3>Open-source control</h3>
+        <p>Review the code, self-host the app, and keep installation data under your control.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="workflow-title" class="section">
+    <h2 id="workflow-title">How it works</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>1. Write a draft</h3>
+        <p>Type <code>/rephrasely</code> followed by the message you want to improve.</p>
+      </article>
+      <article class="card">
+        <h3>2. Review the suggestion</h3>
+        <p>Rephrasely opens an editable Slack modal with an AI-generated improvement.</p>
+      </article>
+      <article class="card">
+        <h3>3. Send as yourself</h3>
+        <p>Edit the final text if needed, then post it with your authorized Slack user token.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="use-cases-title" class="section">
+    <h2 id="use-cases-title">Best use cases</h2>
+    <div class="grid two">
+      <article class="metric">
+        <h3>Customer-facing updates</h3>
+        <p>Polish support replies, status updates, and stakeholder messages directly from Slack.</p>
+      </article>
+      <article class="metric">
+        <h3>Distributed teams</h3>
+        <p>Help teammates communicate clearly across languages, writing styles, and time zones.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-title" class="panel section">
     <h2 id="faq-title">Rephrasely FAQ</h2>
     <h3>What is Rephrasely?</h3>
-    <p>Rephrasely is a Slack app that uses AI to suggest clearer wording for messages.</p>
+    <p>Rephrasely is an open-source Slack app that uses AI to suggest clearer wording for messages.</p>
+    <h3>Who is Rephrasely for?</h3>
+    <p>Rephrasely is useful for teams that want clearer Slack messages, better English drafts, and faster message editing.</p>
     <h3>Does Rephrasely store message content?</h3>
     <p>No. Message content is processed in memory to generate a suggestion and is not stored.</p>
     <h3>How do I use Rephrasely?</h3>
     <p>Type <code>/rephrasely</code> followed by your message in Slack, review the suggestion, and send it.</p>
+    <h3>Can I self-host Rephrasely?</h3>
+    <p>Yes. Rephrasely is open source and can be deployed with Flask, Gunicorn, and your own Slack app credentials.</p>
   </section>
 
   <footer>

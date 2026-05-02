@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="page center">
+  <img src="{{ logo_url }}" alt="Rephrasely logo" class="logo">
+
+  <p class="kicker">AI message rewriting for Slack teams</p>
+  <h1>Polish Slack Messages Before They Go Out</h1>
+  <p class="lead">
+    Rephrasely gives teams a fast Slack-native way to rewrite rough drafts, improve tone,
+    and translate messages into clear English before sending.
+  </p>
+
+  <div class="hero-actions">
+    <a class="btn primary" href="{{ url_for('install') }}">Install Rephrasely</a>
+    <a class="btn secondary" href="{{ url_for('privacy') }}">Read privacy policy</a>
+  </div>
+
+  <section aria-labelledby="campaign-fit-title" class="section">
+    <h2 id="campaign-fit-title">Built for practical team communication</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Support teams</h3>
+        <p>Turn quick internal drafts into clearer customer-facing responses.</p>
+      </article>
+      <article class="card">
+        <h3>Remote teams</h3>
+        <p>Reduce friction when teammates write across languages and communication styles.</p>
+      </article>
+      <article class="card">
+        <h3>Open-source teams</h3>
+        <p>Self-host the app and inspect the implementation before installing it in Slack.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="trust-title" class="section">
+    <h2 id="trust-title">Why install Rephrasely?</h2>
+    <div class="grid two">
+      <article class="metric">
+        <h3>Slack-native workflow</h3>
+        <p>No context switching. The suggestion appears in a Slack modal where users can edit before sending.</p>
+      </article>
+      <article class="metric">
+        <h3>No stored message content</h3>
+        <p>Message text is processed in memory for suggestion generation and is not retained by Rephrasely.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="landing-faq-title" class="panel section">
+    <h2 id="landing-faq-title">Questions before installing</h2>
+    <h3>Does Rephrasely replace human review?</h3>
+    <p>No. Rephrasely provides an editable suggestion. Users should review important messages before sending.</p>
+    <h3>Can Rephrasely send messages as the user?</h3>
+    <p>Yes, when the user approves the required Slack user scope during installation.</p>
+    <h3>Is Rephrasely free to inspect?</h3>
+    <p>Yes. The project is open source under the MIT License.</p>
+  </section>
+</main>
+{% endblock %}
