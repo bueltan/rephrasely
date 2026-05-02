@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="page">
+  <section class="panel">
+    <h1>{{ heading }}</h1>
+    <p>{{ message }}</p>
+    {% if detail %}
+      <div class="card"><strong>Details:</strong> {{ detail }}</div>
+    {% endif %}
+    <div class="row">
+      <a class="btn primary" href="{{ url_for('install') }}">Try again</a>
+      <a class="btn" href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+  </section>
+</main>
+{% endblock %}

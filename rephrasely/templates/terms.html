@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="page">
+  <article class="panel">
+    <h1>Terms of Service</h1>
+    <p>By installing and using Rephrasely, you agree to the following terms.</p>
+    <p>
+      Rephrasely is provided as-is, without warranties of any kind. We do not guarantee
+      uninterrupted service or error-free operation.
+    </p>
+    <p>
+      You are responsible for how you use the app within Slack, including compliance with
+      your organization's policies and Slack's
+      <a href="https://slack.com/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a>.
+    </p>
+    <p>
+      Rephrasely does not store your message content. Minimal installation data is kept only
+      to provide the app's functionality. You may revoke access by uninstalling the app from Slack.
+    </p>
+    <p>We may update these Terms. Continued use of the app indicates acceptance of the new Terms.</p>
+    <footer>
+      <a href="{{ url_for('home') }}">Home</a> |
+      <a href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+    </footer>
+  </article>
+</main>
+{% endblock %}

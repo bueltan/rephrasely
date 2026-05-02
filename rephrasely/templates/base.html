@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <meta name="robots" content="{{ robots|default('index,follow') }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Rephrasely">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ description }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:image" content="{{ logo_url }}">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ title }}">
+    <meta name="twitter:description" content="{{ description }}">
+    <meta name="twitter:image" content="{{ logo_url }}">
+
+    <script type="application/ld+json">
+      {{ structured_data|tojson }}
+    </script>
+
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --link: #2563eb;
+        --accent: #111827;
+        --warning-bg: #fff7ed;
+        --warning-border: #fed7aa;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .page {
+        width: min(900px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 40px 0;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 28px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.06);
+      }
+      .center { text-align: center; }
+      .logo {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0,0,0,.15);
+      }
+      .small-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0,0,0,.12);
+      }
+      .head {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      h1 { margin: 0 0 12px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+      h2 { margin: 28px 0 10px; font-size: 1.25rem; letter-spacing: 0; }
+      p, li { line-height: 1.6; }
+      .lead {
+        max-width: 680px;
+        margin: 0 auto 20px;
+        font-size: 1.1rem;
+      }
+      .muted { color: var(--muted); }
+      .usage {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 18px;
+        margin: 24px auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        display: inline-block;
+        box-shadow: 0 2px 6px rgba(0,0,0,.1);
+      }
+      .ai-disclaimer {
+        margin: 20px auto 0;
+        max-width: 680px;
+        background: var(--warning-bg);
+        border: 1px solid var(--warning-border);
+        color: #7c2d12;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: .95rem;
+      }
+      .slack-btn { margin-top: 20px; }
+      .video {
+        margin-top: 36px;
+        width: 560px;
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+        border: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .btn {
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        text-decoration: none;
+        color: var(--text);
+        background: #fff;
+        font-weight: 600;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      footer {
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: .95rem;
+        text-align: center;
+      }
+      @media (max-width: 640px) {
+        .page { width: min(100% - 24px, 900px); padding: 24px 0; }
+        .panel { padding: 20px; }
+        .head { align-items: flex-start; }
+        h1 { font-size: 1.65rem; }
+      }
+    </style>
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="page center">
+  <img src="{{ logo_url }}" alt="Rephrasely logo" class="logo">
+
+  <h1>Rephrasely</h1>
+  <p class="lead">
+    Rephrasely is an open-source AI Slack assistant that helps you rewrite,
+    translate, and polish messages before sending them.
+  </p>
+
+  <div class="ai-disclaimer">
+    <strong>AI disclaimer:</strong> Rephrasely generates suggestions with artificial intelligence.
+    Review important information before sending.
+  </div>
+
+  <div class="usage">/rephrasely Your original message here</div>
+
+  <div class="slack-btn">
+    <a href="{{ url_for('install') }}" aria-label="Add Rephrasely to Slack">
+      <img alt="Add to Slack" height="40" width="139"
+           src="https://platform.slack-edge.com/img/add_to_slack.png"
+           srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
+                   https://platform.slack-edge.com/img/add_to_slack@2x.png 2x">
+    </a>
+  </div>
+
+  <iframe class="video"
+          src="https://www.youtube.com/embed/DN5VTZUfhE4"
+          title="How to use Rephrasely in Slack"
+          loading="lazy"
+          allowfullscreen></iframe>
+
+  <section aria-labelledby="faq-title" class="panel" style="margin-top: 32px; text-align: left;">
+    <h2 id="faq-title">Rephrasely FAQ</h2>
+    <h3>What is Rephrasely?</h3>
+    <p>Rephrasely is a Slack app that uses AI to suggest clearer wording for messages.</p>
+    <h3>Does Rephrasely store message content?</h3>
+    <p>No. Message content is processed in memory to generate a suggestion and is not stored.</p>
+    <h3>How do I use Rephrasely?</h3>
+    <p>Type <code>/rephrasely</code> followed by your message in Slack, review the suggestion, and send it.</p>
+  </section>
+
+  <footer>
+    <a href="{{ url_for('support') }}">Support</a> |
+    <a href="{{ url_for('privacy') }}">Privacy</a> |
+    <a href="{{ url_for('terms') }}">Terms</a> |
+    <a href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">GitHub</a> |
+    <a href="https://bueltan.github.io/" target="_blank" rel="noopener noreferrer">About</a>
+  </footer>
+</main>
+{% endblock %}

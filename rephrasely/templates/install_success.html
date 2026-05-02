@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="page">
+  <section class="panel center">
+    <img src="{{ logo_url }}" alt="Rephrasely logo" class="logo">
+    <h1>Install successful</h1>
+    <p class="lead">Rephrasely is now connected to your Slack workspace.</p>
+
+    <div class="card" style="text-align: left;">
+      <p><strong>Team:</strong> {{ team_name }} ({{ team_id }})</p>
+      <p><strong>User:</strong> {{ user_id }}</p>
+      <p><strong>Bot token:</strong> <code>{{ bot_token }}</code></p>
+      <p><strong>User token:</strong> <code>{{ user_token }}</code></p>
+    </div>
+
+    {% if missing_user_token %}
+      <div class="ai-disclaimer">
+        <strong>Heads up:</strong> We did not receive a user token. Reinstall and approve the user scope
+        if you want Rephrasely to send messages as you.
+      </div>
+    {% endif %}
+
+    <div class="row" style="justify-content: center; margin-top: 18px;">
+      <a class="btn primary" href="https://slack.com/app_redirect?app={{ client_id }}">Open in Slack</a>
+      <a class="btn" href="{{ url_for('home') }}">Back to Home</a>
+      <a class="btn" href="{{ url_for('install') }}">Install to another workspace</a>
+    </div>
+  </section>
+</main>
+{% endblock %}
