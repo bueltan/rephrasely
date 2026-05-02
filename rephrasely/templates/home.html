@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-<section class="hero" style="background-image: url('{{ url_for('image_about') }}');">
+<section class="hero">
   <div class="hero-inner">
     <div class="brand-mark">
       <img src="{{ logo_url }}" alt="Rephrasely logo">
@@ -101,6 +101,21 @@
             allowfullscreen></iframe>
   </section>
 
+  <section aria-labelledby="creator-title" class="section">
+    <div class="section-header">
+      <p class="kicker">Creator</p>
+      <h2 id="creator-title">Built by Denis Gimenez</h2>
+      <p>
+        Rephrasely is an open-source project by Denis Gimenez. Learn more about the work behind it
+        on the personal site or connect on LinkedIn.
+      </p>
+    </div>
+    <div class="row">
+      <a class="btn secondary" href="https://www.denisgimenez.com" target="_blank" rel="noopener noreferrer">Personal website</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/denis-gimenez/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </section>
+
   <section aria-labelledby="faq-title" class="panel section">
     <h2 id="faq-title">Rephrasely FAQ</h2>
     <h3>What is Rephrasely?</h3>
@@ -125,7 +140,8 @@
     <a href="{{ url_for('privacy') }}">Privacy</a> |
     <a href="{{ url_for('terms') }}">Terms</a> |
     <a href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">GitHub</a> |
-    <a href="https://bueltan.github.io/" target="_blank" rel="noopener noreferrer">About</a>
+    <a href="https://www.denisgimenez.com" target="_blank" rel="noopener noreferrer">Denis Gimenez</a> |
+    <a href="https://www.linkedin.com/in/denis-gimenez/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
   </footer>
 </main>
 {% endblock %}

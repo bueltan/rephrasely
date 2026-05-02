@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-<section class="hero" style="background-image: url('{{ url_for('image_about') }}');">
+<section class="hero">
   <div class="hero-inner">
     <div class="brand-mark">
       <img src="{{ logo_url }}" alt="Rephrasely logo">
@@ -67,6 +67,18 @@
     <p>Yes, when the user approves the required Slack user scope during installation.</p>
     <h3>Is Rephrasely free to inspect?</h3>
     <p>Yes. The project is open source under the MIT License.</p>
+  </section>
+
+  <section aria-labelledby="creator-title" class="section">
+    <div class="section-header">
+      <p class="kicker">Creator</p>
+      <h2 id="creator-title">Created by Denis Gimenez</h2>
+      <p>Explore more work from Denis Gimenez or connect directly on LinkedIn.</p>
+    </div>
+    <div class="row">
+      <a class="btn secondary" href="https://www.denisgimenez.com" target="_blank" rel="noopener noreferrer">Personal website</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/denis-gimenez/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
   </section>
 </main>
 {% endblock %}

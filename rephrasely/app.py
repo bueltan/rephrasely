@@ -427,7 +427,8 @@ def organization_structured_data(settings: Settings) -> dict:
         "creator": {
             "@type": "Person",
             "name": "Denis Gimenez",
-            "url": "https://bueltan.github.io/",
+            "url": "https://www.denisgimenez.com",
+            "sameAs": ["https://www.linkedin.com/in/denis-gimenez/"],
         },
         "codeRepository": "https://github.com/bueltan/rephrasely",
     }
