@@ -1,45 +1,32 @@
 {% extends "base.html" %}
 
 {% block body %}
-<main class="page center">
-  <img src="{{ logo_url }}" alt="Rephrasely logo" class="logo">
-
-  <p class="kicker">Open-source AI writing assistant for Slack</p>
-  <h1>AI Slack Assistant for Clearer Team Messages</h1>
-  <p class="lead">
-    Rephrasely helps teams rewrite, translate, and polish Slack messages before sending them.
-    Use a simple slash command to turn rough drafts into clear, natural communication.
-  </p>
-
-  <div class="hero-actions">
-    <a class="btn primary" href="{{ url_for('install') }}">Add to Slack</a>
-    <a class="btn" href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">View source</a>
+<section class="hero" style="background-image: url('{{ url_for('image_about') }}');">
+  <div class="hero-inner">
+    <div class="brand-mark">
+      <img src="{{ logo_url }}" alt="Rephrasely logo">
+      <span>Rephrasely</span>
+    </div>
+    <p class="kicker">Open-source AI writing assistant for Slack</p>
+    <h1>Write better Slack messages before you send them</h1>
+    <p class="lead">
+      Rewrite rough drafts, translate ideas into natural English, and polish tone in a Slack-native workflow.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('install') }}">Add to Slack</a>
+      <a class="btn secondary" href="{{ url_for('paid_landing') }}">See use cases</a>
+      <a class="btn secondary" href="https://github.com/bueltan/rephrasely" target="_blank" rel="noopener noreferrer">View source</a>
+    </div>
   </div>
+</section>
 
-  <div class="ai-disclaimer">
-    <strong>AI disclaimer:</strong> Rephrasely generates suggestions with artificial intelligence.
-    Review important information before sending.
-  </div>
-
-  <div class="usage">/rephrasely Your original message here</div>
-
-  <div class="slack-btn" aria-label="Official Slack installation button">
-    <a href="{{ url_for('install') }}" aria-label="Add Rephrasely to Slack with Slack OAuth">
-      <img alt="Add to Slack" height="40" width="139"
-           src="https://platform.slack-edge.com/img/add_to_slack.png"
-           srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
-                   https://platform.slack-edge.com/img/add_to_slack@2x.png 2x">
-    </a>
-  </div>
-
-  <iframe class="video"
-          src="https://www.youtube.com/embed/DN5VTZUfhE4"
-          title="How to use Rephrasely in Slack"
-          loading="lazy"
-          allowfullscreen></iframe>
-
-  <section aria-labelledby="benefits-title" class="section">
-    <h2 id="benefits-title">Why teams use Rephrasely</h2>
+<main class="page">
+  <section aria-labelledby="benefits-title" class="section" style="margin-top: 0;">
+    <div class="section-header">
+      <p class="kicker">Why it helps</p>
+      <h2 id="benefits-title">Clearer messages with less context switching</h2>
+      <p>Rephrasely keeps editing inside Slack, so teammates can improve a message without opening another writing tool.</p>
+    </div>
     <div class="grid">
       <article class="card">
         <h3>Clearer writing</h3>
@@ -57,7 +44,11 @@
   </section>
 
   <section aria-labelledby="workflow-title" class="section">
-    <h2 id="workflow-title">How it works</h2>
+    <div class="section-header">
+      <p class="kicker">Workflow</p>
+      <h2 id="workflow-title">From draft to polished message in three steps</h2>
+      <p>The slash command opens a guided editing flow with an editable final suggestion.</p>
+    </div>
     <div class="grid">
       <article class="card">
         <h3>1. Write a draft</h3>
@@ -75,7 +66,10 @@
   </section>
 
   <section aria-labelledby="use-cases-title" class="section">
-    <h2 id="use-cases-title">Best use cases</h2>
+    <div class="section-header">
+      <p class="kicker">Use cases</p>
+      <h2 id="use-cases-title">Useful for support, operations, and distributed teams</h2>
+    </div>
     <div class="grid two">
       <article class="metric">
         <h3>Customer-facing updates</h3>
@@ -86,6 +80,25 @@
         <p>Help teammates communicate clearly across languages, writing styles, and time zones.</p>
       </article>
     </div>
+  </section>
+
+  <section aria-labelledby="demo-title" class="section center">
+    <p class="kicker">Slash command</p>
+    <h2 id="demo-title">Try it from any Slack channel</h2>
+    <div class="usage">/rephrasely Your original message here</div>
+    <div class="slack-btn" aria-label="Official Slack installation button">
+      <a href="{{ url_for('install') }}" aria-label="Add Rephrasely to Slack with Slack OAuth">
+        <img alt="Add to Slack" height="40" width="139"
+             src="https://platform.slack-edge.com/img/add_to_slack.png"
+             srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x,
+                     https://platform.slack-edge.com/img/add_to_slack@2x.png 2x">
+      </a>
+    </div>
+    <iframe class="video"
+            src="https://www.youtube.com/embed/DN5VTZUfhE4"
+            title="How to use Rephrasely in Slack"
+            loading="lazy"
+            allowfullscreen></iframe>
   </section>
 
   <section aria-labelledby="faq-title" class="panel section">
@@ -101,6 +114,11 @@
     <h3>Can I self-host Rephrasely?</h3>
     <p>Yes. Rephrasely is open source and can be deployed with Flask, Gunicorn, and your own Slack app credentials.</p>
   </section>
+
+  <div class="ai-disclaimer">
+    <strong>AI disclaimer:</strong> Rephrasely generates suggestions with artificial intelligence.
+    Review important information before sending.
+  </div>
 
   <footer>
     <a href="{{ url_for('support') }}">Support</a> |

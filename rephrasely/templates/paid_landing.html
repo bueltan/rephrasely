@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 
 {% block body %}
-<main class="page center">
-  <img src="{{ logo_url }}" alt="Rephrasely logo" class="logo">
-
-  <p class="kicker">AI message rewriting for Slack teams</p>
-  <h1>Polish Slack Messages Before They Go Out</h1>
-  <p class="lead">
-    Rephrasely gives teams a fast Slack-native way to rewrite rough drafts, improve tone,
-    and translate messages into clear English before sending.
-  </p>
-
-  <div class="hero-actions">
-    <a class="btn primary" href="{{ url_for('install') }}">Install Rephrasely</a>
-    <a class="btn secondary" href="{{ url_for('privacy') }}">Read privacy policy</a>
+<section class="hero" style="background-image: url('{{ url_for('image_about') }}');">
+  <div class="hero-inner">
+    <div class="brand-mark">
+      <img src="{{ logo_url }}" alt="Rephrasely logo">
+      <span>Rephrasely</span>
+    </div>
+    <p class="kicker">AI message rewriting for Slack teams</p>
+    <h1>Polish Slack messages before they go out</h1>
+    <p class="lead">
+      Give teammates a fast way to improve tone, clarity, and English fluency without leaving Slack.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('install') }}">Install Rephrasely</a>
+      <a class="btn secondary" href="{{ url_for('privacy') }}">Read privacy policy</a>
+    </div>
   </div>
+</section>
 
-  <section aria-labelledby="campaign-fit-title" class="section">
-    <h2 id="campaign-fit-title">Built for practical team communication</h2>
+<main class="page">
+  <section aria-labelledby="campaign-fit-title" class="section" style="margin-top: 0;">
+    <div class="section-header">
+      <p class="kicker">Team fit</p>
+      <h2 id="campaign-fit-title">Built for practical team communication</h2>
+      <p>Use Rephrasely anywhere a clearer Slack message can save time or prevent confusion.</p>
+    </div>
     <div class="grid">
       <article class="card">
         <h3>Support teams</h3>
@@ -35,7 +43,10 @@
   </section>
 
   <section aria-labelledby="trust-title" class="section">
-    <h2 id="trust-title">Why install Rephrasely?</h2>
+    <div class="section-header">
+      <p class="kicker">Trust signals</p>
+      <h2 id="trust-title">Why install Rephrasely?</h2>
+    </div>
     <div class="grid two">
       <article class="metric">
         <h3>Slack-native workflow</h3>

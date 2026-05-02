@@ -45,7 +45,7 @@ def test_paid_landing_has_campaign_metadata(tmp_path):
     assert response.status_code == 200
     body = response.get_data(as_text=True)
     assert '<link rel="canonical" href="https://rephrasely.example/slack-ai-writing-assistant">' in body
-    assert "Polish Slack Messages Before They Go Out" in body
+    assert "Polish Slack messages before they go out" in body
     assert "Install Rephrasely" in body
 
 
