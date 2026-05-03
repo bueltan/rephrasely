@@ -87,18 +87,7 @@ Current minimal scopes:
 poetry run pytest
 ```
 
-The current tests cover Slack signature verification, token persistence, public page metadata, `robots.txt`, and `sitemap.xml`. Add route-level tests when changing OAuth, modal handling, or Slack API behavior.
-
-## SEO and AEO
-
 Public pages are rendered from Flask templates in `rephrasely/templates/`.
-
-- `base.html` owns shared metadata, canonical URLs, Open Graph tags, Twitter card tags, and JSON-LD.
-- `home.html` includes FAQ content and FAQ structured data for answer-engine visibility.
-- `paid_landing.html` serves `/slack-ai-writing-assistant` for focused campaign traffic.
-- `/sitemap.xml` is rendered from known public routes.
-- `/robots.txt` points crawlers to the sitemap.
-- `REPHRASELY_SITE_URL` controls canonical URLs and sitemap locations.
 
 ## Deployment notes
 
